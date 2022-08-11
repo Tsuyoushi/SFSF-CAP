@@ -1,0 +1,7 @@
+ID;parent_ID;assignedTo_ID;name;description;dueDate;status_ID
+4dae162a-56ea-4e99-8061-70ec3f30a2fd;3ca47b3e-eff3-430e-9ae0-1937dd094212;df87d8d4-16df-48da-a8bf-5b2218f62602;Do project planning;Plan the whole project;2022-01-05;7
+fcba3d35-013a-4ab6-9ab9-9fb938eff8a4;3ca47b3e-eff3-430e-9ae0-1937dd094212;3470cf57-b0b9-49ce-b568-52f44df3b09c;Assign team to project;Look for the appropriate experts to work on project;2022-01-05;3
+3fd253a8-4951-47d0-9946-58d97ac21b95;b85cf0b8-2ff3-40a7-af20-52fa024fbce6;81e89fd2-b2d8-4af3-a4b2-2cadfc69e6de;Do project planning;Plan the whole project;2022-05-04;7
+91d18efa-3173-4f7e-86f0-74332c69c8cd;b85cf0b8-2ff3-40a7-af20-52fa024fbce6;79da3255-627f-4782-af10-beb8d1c796b6;Assign team to project;Look for the appropriate experts to work on project;2022-05-04;3
+341a6fa0-6ecf-4eb4-8638-426eed4584f7;b5c6bc42-6f95-4876-9658-13aaecb28008;33c8e150-561a-4228-899f-faabe41094aa;Do project planning;Plan the whole project;2022-08-05;7
+0194b2b8-b9f7-4c6f-8677-18ae7fd627b7;b5c6bc42-6f95-4876-9658-13aaecb28008;d2696b36-3413-4522-a73b-f00560dc3fe5;Assign team to project;Look for the appropriate experts to work on project;2022-08-05;3

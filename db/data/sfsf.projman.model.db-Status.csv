@@ -1,0 +1,8 @@
+ID;name;descr;criticality
+1;Not Started;Activity has not been started yet;2
+2;In Progress;Activity is in progress;5
+3;Overdue;Activity is overdue;1
+4;Blocked;Activity is blocked;2
+5;Paused;Activity is paused;2
+6;Canceled;Activity is canceled;1
+7;Completed;Activity is completed;3

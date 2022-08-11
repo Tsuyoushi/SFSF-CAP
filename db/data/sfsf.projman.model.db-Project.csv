@@ -1,0 +1,4 @@
+ID;name;description;startDate;endDate;status_ID
+3ca47b3e-eff3-430e-9ae0-1937dd094212;S/4HANA Cloud implementation;Global implementation of the S/4HANA Cloud ERP in the organization;2022-01-02;2022-09-30;1
+b85cf0b8-2ff3-40a7-af20-52fa024fbce6;Resource allocation app development;Development of a cloud application to manage presales resources allocation;2022-08-02;2022-11-30;2
+b5c6bc42-6f95-4876-9658-13aaecb28008;BTP enablement program development;Development of the plan and content for the global BTP enablement program;2022-05-01;2022-10-31;3
