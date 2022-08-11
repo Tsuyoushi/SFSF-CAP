@@ -12,7 +12,8 @@
     "@sap/xsenv": "^3.3.2",
     "@sap/xssec": "^3.2.13",
     "express": "^4",
-    "passport": "^0.6.0"
+    "passport": "^0.6.0",
+    "hdb": "^0.19.0"
   },
   "devDependencies": {
     "sqlite3": "^5.0.4"
@@ -83,7 +84,13 @@
           "destination": "SFSF",
           "path": "/odata/v2/User"
         }
+      },
+      "db": {
+        "kind": "sql"
       }
+    },
+    "hana": {
+      "deploy-format": "hdbtable"
     }
   }
 }

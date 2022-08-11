@@ -22,46 +22,60 @@ modules:
     requires:
       - name: sfsf-dest
       - name: sfsf-xsuaa
+      - name: sfsf-projman-db
     provides:
       - name: srv-api # required by consumers of CAP services (e.g. approuter)
         properties:
           srv-url: ${default-url}
 
-resources:
-#------------------------------------------------------------
-- name: sfsf-xsuaa
-# ------------------------------------------------------------
-  type: com.sap.xs.uaa
-  description: sfsf-xsuaa
-  parameters:
-    path: ./xs-security.json
-    service: xsuaa
-    service-keys:
-    - name: sfsf-xsuaa-sk      
-  properties:
-    service-name: sfsf-xsuaa
-    service-plan: application
+  - name: sfsf-projman-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: sfsf-projman-db
 
-# ------------------------------------------------------------
-- name: sfsf-dest
-# ------------------------------------------------------------
-  type: org.cloudfoundry.managed-service
-  requires:
-  - name: srv-api
-  parameters:
-    service: destination
-    service-plan: lite
-    config:
-      HTML5Runtime_enabled: true
-      init_data:
-        instance:
-          existing_destinations_policy: update
-          destinations:
-          - Authentication: BasicAuthentication
-            Name: SFSF
-            ProxyType: Internet
-            Description: 'SAP SuccessFactor Sales'
-            Type: HTTP
-            URL: 'https://apisalesdemo8.successfactors.com'
-            User: env:xs_user
-            Password: env:xs_password
+resources:
+  #------------------------------------------------------------
+  - name: sfsf-xsuaa
+    # ------------------------------------------------------------
+    type: com.sap.xs.uaa
+    description: sfsf-xsuaa
+    parameters:
+      path: ./xs-security.json
+      service: xsuaa
+      service-keys:
+        - name: sfsf-xsuaa-sk
+    properties:
+      service-name: sfsf-xsuaa
+      service-plan: application
+
+  # ------------------------------------------------------------
+  - name: sfsf-dest
+    # ------------------------------------------------------------
+    type: org.cloudfoundry.managed-service
+    requires:
+      - name: srv-api
+    parameters:
+      service: destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            existing_destinations_policy: update
+            destinations:
+              - Authentication: BasicAuthentication
+                Name: SFSF
+                ProxyType: Internet
+                Description: 'SAP SuccessFactor Sales'
+                Type: HTTP
+                URL: 'https://apisalesdemo8.successfactors.com'
+                User: env:xs_user
+                Password: env:xs_password
+  - name: sfsf-projman-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
