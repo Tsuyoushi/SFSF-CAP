@@ -7,10 +7,16 @@
   "private": true,
   "dependencies": {
     "@sap/cds": ">=5",
-    "express": "^4"
+    "@sap/xsenv": "^3.3.2",
+    "@sap/xssec": "^3.2.13",
+    "express": "^4",
+    "passport": "^0.6.0"
   },
   "devDependencies": {
     "sqlite3": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=14"
   },
   "scripts": {
     "start": "cds run"
@@ -38,6 +44,26 @@
     "rules": {
       "no-console": "off",
       "require-atomic-updates": "off"
+    }
+  },
+  "cds": {
+    "requires": {
+      "ECEmployeeProfile": {
+        "kind": "odata-v2",
+        "model": "srv\\external\\ECEmployeeProfile",
+        "credentials": {
+          "destination": "SFSF",
+          "path": "/odata/v2/Background_SpecialAssign"
+        }
+      },
+      "PLTUserManagement": {
+        "kind": "odata-v2",
+        "model": "srv\\external\\PLTUserManagement",
+        "credentials": {
+          "destination": "SFSF",
+          "path": "/odata/v2/User"
+        }
+      }
     }
   }
 }
