@@ -77,7 +77,7 @@
             },
             "ECEmployeeProfile": {
                 "kind": "odata-v2",
-                "model": "srv\\external\\ECEmployeeProfile",
+                "model": "srv/external/ECEmployeeProfile",
                 "credentials": {
                     "destination": "SFSF",
                     "path": "/odata/v2/Background_SpecialAssign"
@@ -85,7 +85,7 @@
             },
             "PLTUserManagement": {
                 "kind": "odata-v2",
-                "model": "srv\\external\\PLTUserManagement",
+                "model": "srv/external/PLTUserManagement",
                 "credentials": {
                     "destination": "SFSF",
                     "path": "/odata/v2/User"
