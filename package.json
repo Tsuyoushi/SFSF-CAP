@@ -1,96 +1,105 @@
 {
-  "name": "sfsf-projman",
-  "version": "1.0.0",
-  "description": "A simple CAP project.",
-  "repository": "<Add your repository here>",
-  "license": "UNLICENSED",
-  "private": true,
-  "dependencies": {
-    "@sap-cloud-sdk/http-client": "^2.7.0",
-    "@sap/cds": ">=5",
-    "@sap/cds-dk": "^6.1.1",
-    "@sap/xsenv": "^3.3.2",
-    "@sap/xssec": "^3.2.13",
-    "express": "^4",
-    "passport": "^0.6.0",
-    "hdb": "^0.19.0"
-  },
-  "devDependencies": {
-    "sqlite3": "^5.0.4"
-  },
-  "engines": {
-    "node": ">=14"
-  },
-  "scripts": {
-    "start": "cds run",
-    "start-local": "cds serve all --with-mocks --in-memory?"
-  },
-  "eslintConfig": {
-    "extends": "eslint:recommended",
-    "env": {
-      "es2020": true,
-      "node": true,
-      "jest": true,
-      "mocha": true
+    "name": "sfsf-projman",
+    "version": "1.0.0",
+    "description": "A simple CAP project.",
+    "repository": "<Add your repository here>",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@sap-cloud-sdk/http-client": "^2.7.0",
+        "@sap/cds": ">=5",
+        "@sap/cds-dk": "^6.1.1",
+        "@sap/xsenv": "^3.3.2",
+        "@sap/xssec": "^3.2.13",
+        "express": "^4",
+        "hdb": "^0.19.0",
+        "passport": "^0.6.0"
     },
-    "globals": {
-      "SELECT": true,
-      "INSERT": true,
-      "UPDATE": true,
-      "DELETE": true,
-      "CREATE": true,
-      "DROP": true,
-      "CDL": true,
-      "CQL": true,
-      "CXL": true,
-      "cds": true
+    "devDependencies": {
+        "@sap/ux-specification": "^1.102.3",
+        "sqlite3": "^5.0.4",
+        "rimraf": "^3.0.2"
     },
-    "rules": {
-      "no-console": "off",
-      "require-atomic-updates": "off"
-    }
-  },
-  "cds": {
-    "requires": {
-      "auth": {
-        "[development]": {
-          "strategy": "mock",
-          "users": {
-            "jonh": {
-              "roles": [
-                "Admin"
-              ]
+    "engines": {
+        "node": ">=14"
+    },
+    "scripts": {
+        "start": "cds run",
+        "start-local": "cds serve all --with-mocks --in-memory?",
+        "watch-sfsf-projman": "cds watch --open sfsf-projman/webapp/index.html?sap-ui-xx-viewCache=false",
+        "undeploy": "cf undeploy sfsf-projman --delete-services --delete-service-keys --delete-service-brokers",
+        "build": "rimraf resources mta_archives && mbt build --mtar archive",
+        "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    },
+    "eslintConfig": {
+        "extends": "eslint:recommended",
+        "env": {
+            "es2020": true,
+            "node": true,
+            "jest": true,
+            "mocha": true
+        },
+        "globals": {
+            "SELECT": true,
+            "INSERT": true,
+            "UPDATE": true,
+            "DELETE": true,
+            "CREATE": true,
+            "DROP": true,
+            "CDL": true,
+            "CQL": true,
+            "CXL": true,
+            "cds": true
+        },
+        "rules": {
+            "no-console": "off",
+            "require-atomic-updates": "off"
+        }
+    },
+    "cds": {
+        "requires": {
+            "auth": {
+                "[development]": {
+                    "strategy": "mock",
+                    "users": {
+                        "jonh": {
+                            "roles": [
+                                "Admin"
+                            ]
+                        },
+                        "mary": {
+                            "roles": [
+                                "Viewer"
+                            ]
+                        }
+                    }
+                }
             },
-            "mary": {
-              "roles": [
-                "Viewer"
-              ]
+            "ECEmployeeProfile": {
+                "kind": "odata-v2",
+                "model": "srv\\external\\ECEmployeeProfile",
+                "credentials": {
+                    "destination": "SFSF",
+                    "path": "/odata/v2/Background_SpecialAssign"
+                }
+            },
+            "PLTUserManagement": {
+                "kind": "odata-v2",
+                "model": "srv\\external\\PLTUserManagement",
+                "credentials": {
+                    "destination": "SFSF",
+                    "path": "/odata/v2/User"
+                }
+            },
+            "db": {
+                "kind": "hana"
             }
-          }
+        },
+        "hana": {
+            "deploy-format": "hdbtable"
         }
-      },
-      "ECEmployeeProfile": {
-        "kind": "odata-v2",
-        "model": "srv\\external\\ECEmployeeProfile",
-        "credentials": {
-          "destination": "SFSF",
-          "path": "/odata/v2/Background_SpecialAssign"
-        }
-      },
-      "PLTUserManagement": {
-        "kind": "odata-v2",
-        "model": "srv\\external\\PLTUserManagement",
-        "credentials": {
-          "destination": "SFSF",
-          "path": "/odata/v2/User"
-        }
-      },
-      "db": {
-        "kind": "sql"
-      }
     },
-    "hana": {
-      "deploy-format": "hdbtable"
-    }
-  }
+    "sapux": [
+        "app/sfsf-projman"
+    ]
 }

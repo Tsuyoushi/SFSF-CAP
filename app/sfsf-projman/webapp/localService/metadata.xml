@@ -1,0 +1,1178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml">
+        <edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+        <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="sfsf.projman.service.ProjectManager" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <EntityContainer Name="EntityContainer">
+                <EntitySet Name="Project" EntityType="sfsf.projman.service.ProjectManager.Project">
+                    <NavigationPropertyBinding Path="status" Target="Status"/>
+                    <NavigationPropertyBinding Path="team" Target="Member"/>
+                    <NavigationPropertyBinding Path="activities" Target="Activity"/>
+                    <NavigationPropertyBinding Path="SiblingEntity" Target="Project"/>
+                </EntitySet>
+                <EntitySet Name="Member" EntityType="sfsf.projman.service.ProjectManager.Member">
+                    <NavigationPropertyBinding Path="parent" Target="Project"/>
+                    <NavigationPropertyBinding Path="member" Target="Employee"/>
+                    <NavigationPropertyBinding Path="role" Target="Role"/>
+                    <NavigationPropertyBinding Path="SiblingEntity" Target="Member"/>
+                </EntitySet>
+                <EntitySet Name="Activity" EntityType="sfsf.projman.service.ProjectManager.Activity">
+                    <NavigationPropertyBinding Path="parent" Target="Project"/>
+                    <NavigationPropertyBinding Path="assignedTo" Target="Member"/>
+                    <NavigationPropertyBinding Path="status" Target="Status"/>
+                    <NavigationPropertyBinding Path="SiblingEntity" Target="Activity"/>
+                </EntitySet>
+                <EntitySet Name="SFSF_User" EntityType="sfsf.projman.service.ProjectManager.SFSF_User"/>
+                <EntitySet Name="Status" EntityType="sfsf.projman.service.ProjectManager.Status">
+                    <NavigationPropertyBinding Path="texts" Target="Status_texts"/>
+                    <NavigationPropertyBinding Path="localized" Target="Status_texts"/>
+                </EntitySet>
+                <EntitySet Name="Employee" EntityType="sfsf.projman.service.ProjectManager.Employee"/>
+                <EntitySet Name="Role" EntityType="sfsf.projman.service.ProjectManager.Role">
+                    <NavigationPropertyBinding Path="texts" Target="Role_texts"/>
+                    <NavigationPropertyBinding Path="localized" Target="Role_texts"/>
+                </EntitySet>
+                <EntitySet Name="Status_texts" EntityType="sfsf.projman.service.ProjectManager.Status_texts"/>
+                <EntitySet Name="Role_texts" EntityType="sfsf.projman.service.ProjectManager.Role_texts"/>
+            </EntityContainer>
+            <EntityType Name="Project">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                    <PropertyRef Name="IsActiveEntity"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="name" Type="Edm.String" MaxLength="128"/>
+                <Property Name="description" Type="Edm.String" MaxLength="1024"/>
+                <Property Name="startDate" Type="Edm.Date"/>
+                <Property Name="endDate" Type="Edm.Date"/>
+                <NavigationProperty Name="status" Type="sfsf.projman.service.ProjectManager.Status">
+                    <ReferentialConstraint Property="status_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="status_ID" Type="Edm.Int32"/>
+                <NavigationProperty Name="team" Type="Collection(sfsf.projman.service.ProjectManager.Member)" Partner="parent">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activities" Type="Collection(sfsf.projman.service.ProjectManager.Activity)" Partner="parent">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+                <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+                <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+                <NavigationProperty Name="DraftAdministrativeData" Type="sfsf.projman.service.ProjectManager.DraftAdministrativeData" ContainsTarget="true"/>
+                <NavigationProperty Name="SiblingEntity" Type="sfsf.projman.service.ProjectManager.Project"/>
+            </EntityType>
+            <EntityType Name="Member">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                    <PropertyRef Name="IsActiveEntity"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="parent" Type="sfsf.projman.service.ProjectManager.Project" Partner="team">
+                    <ReferentialConstraint Property="parent_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="parent_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="member" Type="sfsf.projman.service.ProjectManager.Employee">
+                    <ReferentialConstraint Property="member_userId" ReferencedProperty="userId"/>
+                </NavigationProperty>
+                <Property Name="member_userId" Type="Edm.String" MaxLength="100"/>
+                <NavigationProperty Name="role" Type="sfsf.projman.service.ProjectManager.Role">
+                    <ReferentialConstraint Property="role_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="role_ID" Type="Edm.Int32"/>
+                <Property Name="hasAssignment" Type="Edm.Boolean" DefaultValue="false"/>
+                <Property Name="member_name" Type="Edm.String"/>
+                <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+                <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+                <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+                <NavigationProperty Name="DraftAdministrativeData" Type="sfsf.projman.service.ProjectManager.DraftAdministrativeData" ContainsTarget="true"/>
+                <NavigationProperty Name="SiblingEntity" Type="sfsf.projman.service.ProjectManager.Member"/>
+            </EntityType>
+            <EntityType Name="Activity">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                    <PropertyRef Name="IsActiveEntity"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="parent" Type="sfsf.projman.service.ProjectManager.Project" Partner="activities">
+                    <ReferentialConstraint Property="parent_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="parent_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="assignedTo" Type="sfsf.projman.service.ProjectManager.Member">
+                    <ReferentialConstraint Property="assignedTo_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="assignedTo_ID" Type="Edm.Guid"/>
+                <Property Name="name" Type="Edm.String" MaxLength="128"/>
+                <Property Name="description" Type="Edm.String" MaxLength="1024"/>
+                <Property Name="dueDate" Type="Edm.Date"/>
+                <NavigationProperty Name="status" Type="sfsf.projman.service.ProjectManager.Status">
+                    <ReferentialConstraint Property="status_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="status_ID" Type="Edm.Int32"/>
+                <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+                <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+                <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+                <NavigationProperty Name="DraftAdministrativeData" Type="sfsf.projman.service.ProjectManager.DraftAdministrativeData" ContainsTarget="true"/>
+                <NavigationProperty Name="SiblingEntity" Type="sfsf.projman.service.ProjectManager.Activity"/>
+            </EntityType>
+            <EntityType Name="SFSF_User">
+                <Key>
+                    <PropertyRef Name="userId"/>
+                </Key>
+                <Property Name="userId" Type="Edm.String" MaxLength="100" Nullable="false"/>
+                <Property Name="username" Type="Edm.String" MaxLength="100"/>
+                <Property Name="defaultFullName" Type="Edm.String"/>
+                <Property Name="email" Type="Edm.String"/>
+                <Property Name="division" Type="Edm.String" MaxLength="128"/>
+                <Property Name="department" Type="Edm.String" MaxLength="128"/>
+                <Property Name="title" Type="Edm.String" MaxLength="255"/>
+            </EntityType>
+            <EntityType Name="Status">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="name" Type="Edm.String" MaxLength="255"/>
+                <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="ID" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="criticality" Type="Edm.Int32"/>
+                <NavigationProperty Name="texts" Type="Collection(sfsf.projman.service.ProjectManager.Status_texts)">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="localized" Type="sfsf.projman.service.ProjectManager.Status_texts">
+                    <ReferentialConstraint Property="ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="Employee">
+                <Key>
+                    <PropertyRef Name="userId"/>
+                </Key>
+                <Property Name="userId" Type="Edm.String" MaxLength="100" Nullable="false"/>
+                <Property Name="username" Type="Edm.String" MaxLength="100"/>
+                <Property Name="defaultFullName" Type="Edm.String"/>
+                <Property Name="email" Type="Edm.String"/>
+                <Property Name="division" Type="Edm.String" MaxLength="128"/>
+                <Property Name="department" Type="Edm.String" MaxLength="128"/>
+                <Property Name="title" Type="Edm.String" MaxLength="255"/>
+            </EntityType>
+            <EntityType Name="Role">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="name" Type="Edm.String" MaxLength="255"/>
+                <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="ID" Type="Edm.Int32" Nullable="false"/>
+                <NavigationProperty Name="texts" Type="Collection(sfsf.projman.service.ProjectManager.Role_texts)">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="localized" Type="sfsf.projman.service.ProjectManager.Role_texts">
+                    <ReferentialConstraint Property="ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="DraftAdministrativeData">
+                <Key>
+                    <PropertyRef Name="DraftUUID"/>
+                </Key>
+                <Property Name="DraftUUID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="CreationDateTime" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="CreatedByUser" Type="Edm.String" MaxLength="256"/>
+                <Property Name="DraftIsCreatedByMe" Type="Edm.Boolean"/>
+                <Property Name="LastChangeDateTime" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="LastChangedByUser" Type="Edm.String" MaxLength="256"/>
+                <Property Name="InProcessByUser" Type="Edm.String" MaxLength="256"/>
+                <Property Name="DraftIsProcessedByMe" Type="Edm.Boolean"/>
+            </EntityType>
+            <EntityType Name="Status_texts">
+                <Key>
+                    <PropertyRef Name="locale"/>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="locale" Type="Edm.String" MaxLength="14" Nullable="false"/>
+                <Property Name="name" Type="Edm.String" MaxLength="255"/>
+                <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="ID" Type="Edm.Int32" Nullable="false"/>
+            </EntityType>
+            <EntityType Name="Role_texts">
+                <Key>
+                    <PropertyRef Name="locale"/>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="locale" Type="Edm.String" MaxLength="14" Nullable="false"/>
+                <Property Name="name" Type="Edm.String" MaxLength="255"/>
+                <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="ID" Type="Edm.Int32" Nullable="false"/>
+            </EntityType>
+            <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="sfsf.projman.service.ProjectManager.Project"/>
+                <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+                <ReturnType Type="sfsf.projman.service.ProjectManager.Project"/>
+            </Action>
+            <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="sfsf.projman.service.ProjectManager.Member"/>
+                <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+                <ReturnType Type="sfsf.projman.service.ProjectManager.Member"/>
+            </Action>
+            <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="sfsf.projman.service.ProjectManager.Activity"/>
+                <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+                <ReturnType Type="sfsf.projman.service.ProjectManager.Activity"/>
+            </Action>
+            <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="sfsf.projman.service.ProjectManager.Project"/>
+                <ReturnType Type="sfsf.projman.service.ProjectManager.Project"/>
+            </Action>
+            <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="sfsf.projman.service.ProjectManager.Project"/>
+                <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+                <ReturnType Type="sfsf.projman.service.ProjectManager.Project"/>
+            </Action>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project">
+                <Annotation Term="UI.UpdateHidden" Bool="false"/>
+                <Annotation Term="UI.DeleteHidden" Bool="false"/>
+                <Annotation Term="UI.CreateHidden" Bool="false"/>
+                <Annotation Term="UI.Identification">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="name"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.HeaderInfo">
+                    <Record Type="UI.HeaderInfoType">
+                        <PropertyValue Property="TypeName" String="Project"/>
+                        <PropertyValue Property="TypeNamePlural" String="Projects"/>
+                        <PropertyValue Property="Title">
+                            <Record Type="UI.DataField">
+                                <PropertyValue Property="Value" Path="name"/>
+                            </Record>
+                        </PropertyValue>
+                        <PropertyValue Property="Description">
+                            <Record Type="UI.DataField">
+                                <PropertyValue Property="Value" Path="description"/>
+                            </Record>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="UI.SelectionFields">
+                    <Collection>
+                        <PropertyPath>name</PropertyPath>
+                        <PropertyPath>startDate</PropertyPath>
+                        <PropertyPath>endDate</PropertyPath>
+                        <PropertyPath>status_ID</PropertyPath>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.LineItem">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="name"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="description"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="startDate"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="endDate"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="status/name"/>
+                            <PropertyValue Property="Criticality" Path="status/criticality"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.HeaderFacets">
+                    <Collection>
+                        <Record Type="UI.ReferenceFacet">
+                            <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Detail"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.Facets">
+                    <Collection>
+                        <Record Type="UI.ReferenceFacet">
+                            <PropertyValue Property="ID" String="ProjectsDetails"/>
+                            <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Details"/>
+                            <PropertyValue Property="Label" String="Details"/>
+                        </Record>
+                        <Record Type="UI.ReferenceFacet">
+                            <PropertyValue Property="ID" String="ProjcetTeam"/>
+                            <PropertyValue Property="Target" AnnotationPath="team/@UI.LineItem"/>
+                            <PropertyValue Property="Label" String="Team"/>
+                        </Record>
+                        <Record Type="UI.ReferenceFacet">
+                            <PropertyValue Property="ID" String="ProjcetActivity"/>
+                            <PropertyValue Property="Target" AnnotationPath="activities/@UI.LineItem"/>
+                            <PropertyValue Property="Label" String="Activities"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.DataPoint" Qualifier="ProjName">
+                    <Record Type="UI.DataPointType">
+                        <PropertyValue Property="Value" Path="name"/>
+                        <PropertyValue Property="Title" String="Project Title"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="UI.FieldGroup" Qualifier="Detail">
+                    <Record Type="UI.FieldGroupType">
+                        <PropertyValue Property="Data">
+                            <Collection>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="status_ID"/>
+                                    <PropertyValue Property="Criticality" Path="status/criticality"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="UI.FieldGroup" Qualifier="Details">
+                    <Record Type="UI.FieldGroupType">
+                        <PropertyValue Property="Data">
+                            <Collection>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="startDate"/>
+                                    <PropertyValue Property="Label" String="Start"/>
+                                </Record>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="endDate"/>
+                                    <PropertyValue Property="Label" String="End"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.EntityContainer/Project">
+                <Annotation Term="UI.UpdateHidden" Bool="false"/>
+                <Annotation Term="UI.DeleteHidden" Bool="false"/>
+                <Annotation Term="UI.CreateHidden" Bool="false"/>
+                <Annotation Term="Common.DraftRoot">
+                    <Record Type="Common.DraftRootType">
+                        <PropertyValue Property="ActivationAction" String="sfsf.projman.service.ProjectManager.draftActivate"/>
+                        <PropertyValue Property="EditAction" String="sfsf.projman.service.ProjectManager.draftEdit"/>
+                        <PropertyValue Property="PreparationAction" String="sfsf.projman.service.ProjectManager.draftPrepare"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.InsertRestrictions">
+                    <Record Type="Capabilities.InsertRestrictionsType">
+                        <PropertyValue Property="Insertable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.DeleteRestrictions">
+                    <Record Type="Capabilities.DeleteRestrictionsType">
+                        <PropertyValue Property="Deletable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="true"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/ID">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+                <Annotation Term="Common.Label" String="Project ID"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/name">
+                <Annotation Term="Common.Label" String="Project Title"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/description">
+                <Annotation Term="UI.MultiLineText" Bool="true"/>
+                <Annotation Term="Common.Label" String="Description"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/startDate">
+                <Annotation Term="Common.Label" String="Start"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/endDate">
+                <Annotation Term="Common.Label" String="End"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/status">
+                <Annotation Term="Common.Label" String="Status"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/status_ID">
+                <Annotation Term="Common.Text" Path="status/name">
+                    <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+                </Annotation>
+                <Annotation Term="Common.ValueListWithFixedValues" Bool="true"/>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Common.Label" String="Status"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="Label" String="Status"/>
+                        <PropertyValue Property="CollectionPath" String="Status"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="status_ID"/>
+                                    <PropertyValue Property="ValueListProperty" String="ID"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/IsActiveEntity">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/HasActiveEntity">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/HasDraftEntity">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Project/DraftAdministrativeData">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member">
+                <Annotation Term="UI.UpdateHidden" Bool="false"/>
+                <Annotation Term="UI.DeleteHidden" Bool="false"/>
+                <Annotation Term="UI.CreateHidden" Bool="false"/>
+                <Annotation Term="UI.Identification">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="member_name"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.HeaderInfo">
+                    <Record Type="UI.HeaderInfoType">
+                        <PropertyValue Property="TypeName" String="Member"/>
+                        <PropertyValue Property="TypeNamePlural" String="Members"/>
+                        <PropertyValue Property="Title">
+                            <Record Type="UI.DataField">
+                                <PropertyValue Property="Value" Path="member_userId"/>
+                            </Record>
+                        </PropertyValue>
+                        <PropertyValue Property="Description">
+                            <Record Type="UI.DataField">
+                                <PropertyValue Property="Value" Path="member/title"/>
+                            </Record>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="UI.SelectionFields">
+                    <Collection>
+                        <PropertyPath>member/division</PropertyPath>
+                        <PropertyPath>member/department</PropertyPath>
+                        <PropertyPath>member/email</PropertyPath>
+                        <PropertyPath>role/name</PropertyPath>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.LineItem">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="member_userId"/>
+                            <PropertyValue Property="Label" String="Name"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="member/title"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="member/email"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="member/division"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="member/department"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="role_ID"/>
+                            <PropertyValue Property="Label" String="Role"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.HeaderFacets">
+                    <Collection>
+                        <Record Type="UI.ReferenceFacet">
+                            <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Detail"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.Facets">
+                    <Collection>
+                        <Record Type="UI.ReferenceFacet">
+                            <PropertyValue Property="ID" String="ProjectsDetails"/>
+                            <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Details"/>
+                            <PropertyValue Property="Label" String="Details"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.FieldGroup" Qualifier="Detail">
+                    <Record Type="UI.FieldGroupType">
+                        <PropertyValue Property="Data">
+                            <Collection>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="role_ID"/>
+                                    <PropertyValue Property="Label" String="Role"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="UI.FieldGroup" Qualifier="Details">
+                    <Record Type="UI.FieldGroupType">
+                        <PropertyValue Property="Data">
+                            <Collection>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="member/email"/>
+                                    <PropertyValue Property="Label" String="e-Mail"/>
+                                </Record>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="member/division"/>
+                                    <PropertyValue Property="Label" String="Division"/>
+                                </Record>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="member/department"/>
+                                    <PropertyValue Property="Label" String="Department"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.EntityContainer/Member">
+                <Annotation Term="UI.UpdateHidden" Bool="false"/>
+                <Annotation Term="UI.DeleteHidden" Bool="false"/>
+                <Annotation Term="UI.CreateHidden" Bool="false"/>
+                <Annotation Term="Capabilities.SearchRestrictions">
+                    <Record Type="Capabilities.SearchRestrictionsType">
+                        <PropertyValue Property="Searchable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.InsertRestrictions">
+                    <Record Type="Capabilities.InsertRestrictionsType">
+                        <PropertyValue Property="Insertable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.DeleteRestrictions">
+                    <Record Type="Capabilities.DeleteRestrictionsType">
+                        <PropertyValue Property="Deletable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Common.DraftNode">
+                    <Record Type="Common.DraftNodeType">
+                        <PropertyValue Property="PreparationAction" String="sfsf.projman.service.ProjectManager.draftPrepare"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/ID">
+                <Annotation Term="Common.Text" Path="member_name">
+                    <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+                </Annotation>
+                <Annotation Term="Common.Label" String="Member ID"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/parent">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+                <Annotation Term="Common.Label" String="Project ID"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/parent_ID">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+                <Annotation Term="Common.Label" String="Project ID"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/member">
+                <Annotation Term="Common.Label" String="Name"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/member_userId">
+                <Annotation Term="Common.Text" Path="member/defaultFullName">
+                    <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+                </Annotation>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="CollectionPath" String="SFSF_User"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="member_userId"/>
+                                    <PropertyValue Property="ValueListProperty" String="userId"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="defaultFullName"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                        <PropertyValue Property="Label" String="Employees"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Common.Label" String="Name"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/role">
+                <Annotation Term="Common.Label" String="Role"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/role_ID">
+                <Annotation Term="Common.Text" Path="role/name">
+                    <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+                </Annotation>
+                <Annotation Term="Common.ValueListWithFixedValues" Bool="true"/>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Common.Label" String="Role"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="Label" String="Role"/>
+                        <PropertyValue Property="CollectionPath" String="Role"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="role_ID"/>
+                                    <PropertyValue Property="ValueListProperty" String="ID"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/hasAssignment">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/member_name">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+                <Annotation Term="Common.Label" String="Name"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/IsActiveEntity">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/HasActiveEntity">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/HasDraftEntity">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Member/DraftAdministrativeData">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity">
+                <Annotation Term="UI.UpdateHidden" Bool="false"/>
+                <Annotation Term="UI.DeleteHidden" Bool="false"/>
+                <Annotation Term="UI.CreateHidden" Bool="false"/>
+                <Annotation Term="UI.Identification">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="name"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.HeaderInfo">
+                    <Record Type="UI.HeaderInfoType">
+                        <PropertyValue Property="TypeName" String="Activity"/>
+                        <PropertyValue Property="TypeNamePlural" String="Activities"/>
+                        <PropertyValue Property="Title">
+                            <Record Type="UI.DataField">
+                                <PropertyValue Property="Value" Path="name"/>
+                            </Record>
+                        </PropertyValue>
+                        <PropertyValue Property="Description">
+                            <Record Type="UI.DataField">
+                                <PropertyValue Property="Value" Path="description"/>
+                            </Record>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="UI.SelectionFields">
+                    <Collection>
+                        <PropertyPath>name</PropertyPath>
+                        <PropertyPath>assignedTo_ID</PropertyPath>
+                        <PropertyPath>dueDate</PropertyPath>
+                        <PropertyPath>status_ID</PropertyPath>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.LineItem">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="name"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="description"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="assignedTo_ID"/>
+                            <PropertyValue Property="Label" String="Assigned To"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="assignedTo/role/name"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="dueDate"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="status_ID"/>
+                            <PropertyValue Property="Label" String="Status"/>
+                            <PropertyValue Property="Criticality" Path="status/criticality"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.HeaderFacets">
+                    <Collection>
+                        <Record Type="UI.ReferenceFacet">
+                            <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Detail"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.Facets">
+                    <Collection>
+                        <Record Type="UI.ReferenceFacet">
+                            <PropertyValue Property="ID" String="ActivityDetails"/>
+                            <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Details"/>
+                            <PropertyValue Property="Label" String="Details"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.FieldGroup" Qualifier="Detail">
+                    <Record Type="UI.FieldGroupType">
+                        <PropertyValue Property="Data">
+                            <Collection>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="status_ID"/>
+                                    <PropertyValue Property="Criticality" Path="status/criticality"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="UI.FieldGroup" Qualifier="Details">
+                    <Record Type="UI.FieldGroupType">
+                        <PropertyValue Property="Data">
+                            <Collection>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="assignedTo_ID"/>
+                                    <PropertyValue Property="Label" String="Assigned To"/>
+                                </Record>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="assignedTo/role/name"/>
+                                    <PropertyValue Property="Label" String="Role"/>
+                                </Record>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="dueDate"/>
+                                    <PropertyValue Property="Label" String="Due Date"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.EntityContainer/Activity">
+                <Annotation Term="UI.UpdateHidden" Bool="false"/>
+                <Annotation Term="UI.DeleteHidden" Bool="false"/>
+                <Annotation Term="UI.CreateHidden" Bool="false"/>
+                <Annotation Term="Capabilities.SearchRestrictions">
+                    <Record Type="Capabilities.SearchRestrictionsType">
+                        <PropertyValue Property="Searchable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.InsertRestrictions">
+                    <Record Type="Capabilities.InsertRestrictionsType">
+                        <PropertyValue Property="Insertable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.DeleteRestrictions">
+                    <Record Type="Capabilities.DeleteRestrictionsType">
+                        <PropertyValue Property="Deletable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Common.DraftNode">
+                    <Record Type="Common.DraftNodeType">
+                        <PropertyValue Property="PreparationAction" String="sfsf.projman.service.ProjectManager.draftPrepare"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/ID">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+                <Annotation Term="Common.Label" String="Activity ID"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/parent">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+                <Annotation Term="Common.Label" String="Project ID"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/parent_ID">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+                <Annotation Term="Common.Label" String="Project ID"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/assignedTo">
+                <Annotation Term="Common.Label" String="Assigned To"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/assignedTo_ID">
+                <Annotation Term="Common.Text" Path="assignedTo/member_name">
+                    <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+                </Annotation>
+                <Annotation Term="Common.ValueListWithFixedValues" Bool="true"/>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="CollectionPath" String="Member"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="assignedTo_ID"/>
+                                    <PropertyValue Property="ValueListProperty" String="ID"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterIn">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="parent_ID"/>
+                                    <PropertyValue Property="ValueListProperty" String="parent_ID"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="member_name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Common.Label" String="Assigned To"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/name">
+                <Annotation Term="Common.Label" String="Activity"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/description">
+                <Annotation Term="UI.MultiLineText" Bool="true"/>
+                <Annotation Term="Common.Label" String="Description"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/dueDate">
+                <Annotation Term="Common.Label" String="Due Date"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/status">
+                <Annotation Term="Common.Label" String="Status"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/status_ID">
+                <Annotation Term="Common.Text" Path="status/name">
+                    <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+                </Annotation>
+                <Annotation Term="Common.ValueListWithFixedValues" Bool="true"/>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Common.Label" String="Status"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="Label" String="Status"/>
+                        <PropertyValue Property="CollectionPath" String="Status"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="status_ID"/>
+                                    <PropertyValue Property="ValueListProperty" String="ID"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/IsActiveEntity">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/HasActiveEntity">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/HasDraftEntity">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Activity/DraftAdministrativeData">
+                <Annotation Term="UI.Hidden" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.SFSF_User">
+                <Annotation Term="UI.CreateHidden" Bool="true"/>
+                <Annotation Term="UI.UpdateHidden" Bool="true"/>
+                <Annotation Term="UI.DeleteHidden" Bool="true"/>
+                <Annotation Term="UI.Identification">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="defaultFullName"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.HeaderInfo">
+                    <Record Type="UI.HeaderInfoType">
+                        <PropertyValue Property="TypeName" String="User"/>
+                        <PropertyValue Property="TypeNamePlural" String="Users"/>
+                        <PropertyValue Property="Title">
+                            <Record Type="UI.DataField">
+                                <PropertyValue Property="Value" Path="defaultFullName"/>
+                            </Record>
+                        </PropertyValue>
+                        <PropertyValue Property="Description">
+                            <Record Type="UI.DataField">
+                                <PropertyValue Property="Value" Path="title"/>
+                            </Record>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="UI.SelectionFields">
+                    <Collection>
+                        <PropertyPath>userId</PropertyPath>
+                        <PropertyPath>username</PropertyPath>
+                        <PropertyPath>division</PropertyPath>
+                        <PropertyPath>department</PropertyPath>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="UI.LineItem">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="userId"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="defaultFullName"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="email"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="title"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="division"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="department"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="Capabilities.Insertable" Bool="false"/>
+                <Annotation Term="Capabilities.Deletable" Bool="false"/>
+                <Annotation Term="Capabilities.Updatable" Bool="false"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.EntityContainer/SFSF_User">
+                <Annotation Term="UI.CreateHidden" Bool="true"/>
+                <Annotation Term="UI.UpdateHidden" Bool="true"/>
+                <Annotation Term="UI.DeleteHidden" Bool="true"/>
+                <Annotation Term="Capabilities.SearchRestrictions">
+                    <Record Type="Capabilities.SearchRestrictionsType">
+                        <PropertyValue Property="Searchable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.DeleteRestrictions">
+                    <Record Type="Capabilities.DeleteRestrictionsType">
+                        <PropertyValue Property="Deletable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.InsertRestrictions">
+                    <Record Type="Capabilities.InsertRestrictionsType">
+                        <PropertyValue Property="Insertable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="false"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.SFSF_User/userId">
+                <Annotation Term="Common.Text" Path="defaultFullName">
+                    <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextSeparate"/>
+                </Annotation>
+                <Annotation Term="Common.Label" String="User ID"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.SFSF_User/username">
+                <Annotation Term="Common.Label" String="User Name"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.SFSF_User/defaultFullName">
+                <Annotation Term="Common.Label" String="Name"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.SFSF_User/email">
+                <Annotation Term="Common.Label" String="e-Mail"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.SFSF_User/division">
+                <Annotation Term="Common.Label" String="Division"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.SFSF_User/department">
+                <Annotation Term="Common.Label" String="Department"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.SFSF_User/title">
+                <Annotation Term="Common.Label" String="Title"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Status">
+                <Annotation Term="UI.Identification">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="name"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.EntityContainer/Status">
+                <Annotation Term="Capabilities.InsertRestrictions">
+                    <Record Type="Capabilities.InsertRestrictionsType">
+                        <PropertyValue Property="Insertable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.DeleteRestrictions">
+                    <Record Type="Capabilities.DeleteRestrictionsType">
+                        <PropertyValue Property="Deletable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="false"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Status/name">
+                <Annotation Term="Common.Label" String="Status"/>
+            </Annotations>
+            <Annotations Target="sfsf.projman.service.ProjectManager.Status/descr">
+                <Annotation Term="Common.Label" String="{i18n>Description}"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Status/ID">
+                    <Annotation Term="Common.Text" Path="name">
+                        <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+                    </Annotation>
+                    <Annotation Term="Common.Label" String="Status ID"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.EntityContainer/Employee">
+                    <Annotation Term="Capabilities.InsertRestrictions">
+                        <Record Type="Capabilities.InsertRestrictionsType">
+                            <PropertyValue Property="Insertable" Bool="false"/>
+                        </Record>
+                    </Annotation>
+                    <Annotation Term="Capabilities.DeleteRestrictions">
+                        <Record Type="Capabilities.DeleteRestrictionsType">
+                            <PropertyValue Property="Deletable" Bool="false"/>
+                        </Record>
+                    </Annotation>
+                    <Annotation Term="Capabilities.UpdateRestrictions">
+                        <Record Type="Capabilities.UpdateRestrictionsType">
+                            <PropertyValue Property="Updatable" Bool="false"/>
+                        </Record>
+                    </Annotation>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Employee/userId">
+                    <Annotation Term="Common.Label" String="User ID"/>
+                    <Annotation Term="Core.Computed" Bool="true"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Employee/username">
+                    <Annotation Term="Common.Label" String="User Name"/>
+                    <Annotation Term="Core.Computed" Bool="true"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Employee/defaultFullName">
+                    <Annotation Term="Common.Label" String="Name"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Employee/email">
+                    <Annotation Term="Common.Label" String="e-Mail"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Employee/division">
+                    <Annotation Term="Common.Label" String="Division"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Employee/department">
+                    <Annotation Term="Common.Label" String="Department"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Employee/title">
+                    <Annotation Term="Common.Label" String="Title"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Role">
+                    <Annotation Term="UI.Identification">
+                        <Collection>
+                            <Record Type="UI.DataField">
+                                <PropertyValue Property="Value" Path="name"/>
+                            </Record>
+                        </Collection>
+                    </Annotation>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.EntityContainer/Role">
+                    <Annotation Term="Capabilities.InsertRestrictions">
+                        <Record Type="Capabilities.InsertRestrictionsType">
+                            <PropertyValue Property="Insertable" Bool="false"/>
+                        </Record>
+                    </Annotation>
+                    <Annotation Term="Capabilities.DeleteRestrictions">
+                        <Record Type="Capabilities.DeleteRestrictionsType">
+                            <PropertyValue Property="Deletable" Bool="false"/>
+                        </Record>
+                    </Annotation>
+                    <Annotation Term="Capabilities.UpdateRestrictions">
+                        <Record Type="Capabilities.UpdateRestrictionsType">
+                            <PropertyValue Property="Updatable" Bool="false"/>
+                        </Record>
+                    </Annotation>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Role/name">
+                    <Annotation Term="Common.Label" String="Role"/>
+                </Annotations>
+                <Annotations Target="sfsf.projman.service.ProjectManager.Role/descr">
+                    <Annotation Term="Common.Label" String="{i18n>Description}"/>
+                    </Annotations>
+                    <Annotations Target="sfsf.projman.service.ProjectManager.Role/ID">
+                        <Annotation Term="Common.Text" Path="name">
+                            <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+                        </Annotation>
+                        <Annotation Term="Common.Label" String="Role ID"/>
+                    </Annotations>
+                    <Annotations Target="sfsf.projman.service.ProjectManager.DraftAdministrativeData">
+                        <Annotation Term="Common.Label" String="{i18n>Draft_DraftAdministrativeData}"/>
+                        </Annotations>
+                        <Annotations Target="sfsf.projman.service.ProjectManager.DraftAdministrativeData/DraftUUID">
+                            <Annotation Term="UI.Hidden" Bool="true"/>
+                            <Annotation Term="Common.Label" String="{i18n>Draft_DraftUUID}"/>
+                            </Annotations>
+                            <Annotations Target="sfsf.projman.service.ProjectManager.DraftAdministrativeData/CreationDateTime">
+                                <Annotation Term="Common.Label" String="{i18n>Draft_CreationDateTime}"/>
+                                </Annotations>
+                                <Annotations Target="sfsf.projman.service.ProjectManager.DraftAdministrativeData/CreatedByUser">
+                                    <Annotation Term="Common.Label" String="{i18n>Draft_CreatedByUser}"/>
+                                    </Annotations>
+                                    <Annotations Target="sfsf.projman.service.ProjectManager.DraftAdministrativeData/DraftIsCreatedByMe">
+                                        <Annotation Term="UI.Hidden" Bool="true"/>
+                                        <Annotation Term="Common.Label" String="{i18n>Draft_DraftIsCreatedByMe}"/>
+                                        </Annotations>
+                                        <Annotations Target="sfsf.projman.service.ProjectManager.DraftAdministrativeData/LastChangeDateTime">
+                                            <Annotation Term="Common.Label" String="{i18n>Draft_LastChangeDateTime}"/>
+                                            </Annotations>
+                                            <Annotations Target="sfsf.projman.service.ProjectManager.DraftAdministrativeData/LastChangedByUser">
+                                                <Annotation Term="Common.Label" String="{i18n>Draft_LastChangedByUser}"/>
+                                                </Annotations>
+                                                <Annotations Target="sfsf.projman.service.ProjectManager.DraftAdministrativeData/InProcessByUser">
+                                                    <Annotation Term="Common.Label" String="{i18n>Draft_InProcessByUser}"/>
+                                                    </Annotations>
+                                                    <Annotations Target="sfsf.projman.service.ProjectManager.DraftAdministrativeData/DraftIsProcessedByMe">
+                                                        <Annotation Term="UI.Hidden" Bool="true"/>
+                                                        <Annotation Term="Common.Label" String="{i18n>Draft_DraftIsProcessedByMe}"/>
+                                                        </Annotations>
+                                                        <Annotations Target="sfsf.projman.service.ProjectManager.Status_texts/locale">
+                                                            <Annotation Term="Common.Label" String="{i18n>LanguageCode}"/>
+                                                            </Annotations>
+                                                            <Annotations Target="sfsf.projman.service.ProjectManager.Status_texts/name">
+                                                                <Annotation Term="Common.Label" String="{i18n>Name}"/>
+                                                                </Annotations>
+                                                                <Annotations Target="sfsf.projman.service.ProjectManager.Status_texts/descr">
+                                                                    <Annotation Term="Common.Label" String="{i18n>Description}"/>
+                                                                    </Annotations>
+                                                                    <Annotations Target="sfsf.projman.service.ProjectManager.Role_texts/locale">
+                                                                        <Annotation Term="Common.Label" String="{i18n>LanguageCode}"/>
+                                                                        </Annotations>
+                                                                        <Annotations Target="sfsf.projman.service.ProjectManager.Role_texts/name">
+                                                                            <Annotation Term="Common.Label" String="{i18n>Name}"/>
+                                                                            </Annotations>
+                                                                            <Annotations Target="sfsf.projman.service.ProjectManager.Role_texts/descr">
+                                                                                <Annotation Term="Common.Label" String="{i18n>Description}"/>
+                                                                                </Annotations>
+                                                                            </Schema>
+                                                                        </edmx:DataServices>
+                                                                    </edmx:Edmx>

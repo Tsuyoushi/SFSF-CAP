@@ -1,81 +1,146 @@
----
-_schema-version: '3.1'
+_schema-version: "3.1"
 ID: sfsf-projman
+description: A simple CAP project.
 version: 1.0.0
-description: "A simple CAP project."
+modules:
+- name: sfsf-projman-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: sfsf-projman-db
+  - name: sfsf-projman-destination-service
+  - name: uaa_sfsf-projman
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    host: ${appname}
+  build-parameters:
+    builder: npm-ci
+- name: sfsf-projman-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: sfsf-projman-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: sfsf-projman-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: sfsf-projman-destination-service
+    parameters:
+      content-target: true
+  - name: sfsf-projman_html_repo_host
+    parameters:
+      service-key:
+        name: sfsf-projman_html_repo_host-key
+  - name: uaa_sfsf-projman
+    parameters:
+      service-key:
+        name: uaa_sfsf-projman-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: sfsf_projman_9aa5b682trial_sfsf_projman_html_repo_host
+          ServiceInstanceName: sfsf-projman-html5-app-host-service
+          ServiceKeyName: sfsf-projman_html_repo_host-key
+          sap.cloud.service: sfsf-projman-9aa5b682trial
+        - Authentication: OAuth2UserTokenExchange
+          Name: sfsf_projman_9aa5b682trial_uaa_sfsf_projman
+          ServiceInstanceName: sfsf-projman-xsuaa-service
+          ServiceKeyName: uaa_sfsf-projman-key
+          sap.cloud.service: sfsf-projman-9aa5b682trial
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: sfsf-projman-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: sfsf-projman_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - sfsfprojmansfsfprojman.zip
+      name: sfsfprojmansfsfprojman
+      target-path: resources/
+- name: sfsfprojmansfsfprojman
+  type: html5
+  path: app/sfsf-projman
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: sfsf-projman-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: sfsf-projman-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: BasicAuthentication
+            Description: SAP SuccessFactor Sales
+            Name: SFSF
+            Password: env:xs_password
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://apisalesdemo8.successfactors.com
+            User: env:xs_user
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            Description: Project Manager CAP service
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+            Name: sfsf-projman-app-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: sfsf-projman-destination-service
+    service-plan: lite
+  requires:
+  - name: srv-api
+- name: sfsf-projman_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: sfsf-projman-html5-app-host-service
+    service-plan: app-host
+- name: uaa_sfsf-projman
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: sfsf-projman-xsuaa-service
+    service-plan: application
 parameters:
+  appname: sfsf-projman-9aa5b682trial
+  deploy_mode: html5-repo
   enable-parallel-deployments: true
 build-parameters:
   before-all:
-    - builder: custom
-      commands:
-        - npx -p @sap/cds-dk cds build --production
-
-modules:
-  - name: sfsf-projman-srv
-    type: nodejs
-    path: gen/srv
-    parameters:
-      buildpack: nodejs_buildpack
-    build-parameters:
-      builder: npm-ci
-    requires:
-      - name: sfsf-dest
-      - name: sfsf-xsuaa
-      - name: sfsf-projman-db
-    provides:
-      - name: srv-api # required by consumers of CAP services (e.g. approuter)
-        properties:
-          srv-url: ${default-url}
-
-  - name: sfsf-projman-db-deployer
-    type: hdb
-    path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
-    requires:
-      - name: sfsf-projman-db
-
-resources:
-  #------------------------------------------------------------
-  - name: sfsf-xsuaa
-    # ------------------------------------------------------------
-    type: com.sap.xs.uaa
-    description: sfsf-xsuaa
-    parameters:
-      path: ./xs-security.json
-      service: xsuaa
-      service-keys:
-        - name: sfsf-xsuaa-sk
-    properties:
-      service-name: sfsf-xsuaa
-      service-plan: application
-
-  # ------------------------------------------------------------
-  - name: sfsf-dest
-    # ------------------------------------------------------------
-    type: org.cloudfoundry.managed-service
-    requires:
-      - name: srv-api
-    parameters:
-      service: destination
-      service-plan: lite
-      config:
-        HTML5Runtime_enabled: true
-        init_data:
-          instance:
-            existing_destinations_policy: update
-            destinations:
-              - Authentication: BasicAuthentication
-                Name: SFSF
-                ProxyType: Internet
-                Description: 'SAP SuccessFactor Sales'
-                Type: HTTP
-                URL: 'https://apisalesdemo8.successfactors.com'
-                User: env:xs_user
-                Password: env:xs_password
-  - name: sfsf-projman-db
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana
-      service-plan: hdi-shared
+  - builder: custom
+    commands:
+    - npx -p @sap/cds-dk cds build --production
