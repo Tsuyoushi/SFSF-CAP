@@ -8,6 +8,7 @@
   "dependencies": {
     "@sap-cloud-sdk/http-client": "^2.7.0",
     "@sap/cds": ">=5",
+    "@sap/cds-dk": "^6.1.1",
     "@sap/xsenv": "^3.3.2",
     "@sap/xssec": "^3.2.13",
     "express": "^4",
@@ -20,7 +21,8 @@
     "node": ">=14"
   },
   "scripts": {
-    "start": "cds run"
+    "start": "cds run",
+    "start-local": "cds serve all --with-mocks --in-memory?"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
@@ -49,6 +51,23 @@
   },
   "cds": {
     "requires": {
+      "auth": {
+        "[development]": {
+          "strategy": "mock",
+          "users": {
+            "jonh": {
+              "roles": [
+                "Admin"
+              ]
+            },
+            "mary": {
+              "roles": [
+                "Viewer"
+              ]
+            }
+          }
+        }
+      },
       "ECEmployeeProfile": {
         "kind": "odata-v2",
         "model": "srv\\external\\ECEmployeeProfile",
